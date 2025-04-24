@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { userLogin } from '../services/userService'
+import { encrypt } from '../utils/util'
 
 function Login() {
 
@@ -8,6 +9,11 @@ function Login() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [csrf, setCsrf] = useState('')
+
+  useEffect(() => {
+
+  }, [])
 
   const fncLogin = (evt: React.FormEvent) => {
     evt.preventDefault() // form submit cancel
@@ -18,13 +24,15 @@ function Login() {
         localStorage.setItem('token', userData.data.access_token)
         localStorage.setItem('id', userData.data.user.id.toString())
         localStorage.setItem('name', userData.data.user.name)
-        localStorage.setItem('role', userData.data.user.role)
+        const cipherRole = encrypt(userData.data.user.role, userData.data.user.id.toString())
+        localStorage.setItem('role', cipherRole)
         navigate('/products', { replace: true })
       }else {
         alert('Invalid email or password')
       }
     }).catch( err => {
       alert(err.response.data.message)
+      window.location.href = '/'
     })
   }
 

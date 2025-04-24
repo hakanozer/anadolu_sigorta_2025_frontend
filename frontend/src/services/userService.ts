@@ -1,6 +1,6 @@
 import { IJWTProfile, IUser } from "../models/IUser";
 import { IUserRegister } from "../models/IUserRegister";
-import api from "./api";
+import api, { jwtApi } from "./api";
 
 export const userLogin = ( email: string, password: string ) => {
     const sendObj = {
@@ -19,10 +19,17 @@ export const userRegister = ( name: string, email: string, password: string ) =>
     return api.post<IUserRegister>('auth/signup', sendObj)
 }
 
-export const userProfile = ( jwt: string ) => {
+export const userProfile = ( ) => {
+    const jwt = localStorage.getItem('token')
+    if (!jwt) {
+        throw new Error('JWT token not found in localStorage')
+    }
+    jwtApi.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
+    /*
     const header = {
         Authorization: `Bearer ${jwt}`,
     }
-    return api.get<IJWTProfile>('profile/me', { headers: header })
+    */
+    return jwtApi.get<IJWTProfile>('profile/me')
 }
 

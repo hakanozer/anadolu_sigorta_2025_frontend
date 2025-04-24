@@ -14,5 +14,5 @@ export const singleProduct = (pid: string) => {
 }
 
 export const productSearch = (query: string) => {
-    return api.get<Product[]>('products/search', { params: { query: query } })
+    return api.get<IProduct>('products/search', { params: { query: query } })
 }

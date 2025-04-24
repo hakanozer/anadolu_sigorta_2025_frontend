@@ -5,12 +5,14 @@ import { getAllLikes } from '../utils/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { ILikesAction } from '../useRedux/likesReducer'
 import { StateType } from '../useRedux/reduxStore'
+import { decrypt } from '../utils/util'
 
 function Navbar() {
 
     const searchRef = useRef<HTMLInputElement>(null)
     const nameRef = useRef<HTMLAnchorElement>(null)
     const [name, setName] = useState('')
+    const [role, setRole] = useState('')
 
     useEffect( () => {
         if (searchRef.current) {
@@ -20,10 +22,11 @@ function Navbar() {
             nameRef.current.hidden = true
         }
         const jwt = localStorage.getItem('token')
+        const stRole = localStorage.getItem('role')
         if (jwt === null) {
             window.location.href = '/'
         }else {
-            userProfile(jwt).then( res => {
+            userProfile().then( res => {
                 const userData = res.data
                 if (userData) {
                     setName( userData.data.name )
@@ -35,6 +38,11 @@ function Navbar() {
                         nameRef.current.hidden = false
                         nameRef.current.style.color = 'red'
                     }
+                    if (stRole) {
+                        const plainTextRole = decrypt(stRole, userData.data.id.toString())
+                        setRole(plainTextRole)
+                    }
+                    
                 }
             }).catch( err => {
                 localStorage.clear()
@@ -93,7 +101,7 @@ function Navbar() {
             </ul>
             </li>
             <li className="nav-item">
-            <a ref={nameRef} className="nav-link disabled" aria-disabled="true">{name}</a>
+            <a ref={nameRef} className="nav-link disabled" aria-disabled="true">{name} - ({role})</a>
             </li>
         </ul>
         <form action='/search' className="d-flex" role="search">

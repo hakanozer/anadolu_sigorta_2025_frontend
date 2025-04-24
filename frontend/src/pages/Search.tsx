@@ -12,9 +12,9 @@ function Search() {
   useEffect(() => {
       const q = params.get('q')
       if (q) {
-          setq(q)
-          productSearch(q).then(res => {
-              setArr(res.data)
+            setq(q)
+            productSearch(q).then(res => {
+              setArr(res.data.data)
           }).catch(err => {
               setq(q + ' not found')
           })
@@ -23,7 +23,9 @@ function Search() {
 
   return (
     <>
-        <h2>Search - {q} - ({arr.length})</h2>
+      
+        <h2 >Search - {q} - ({arr.length})</h2>
+        <div dangerouslySetInnerHTML={{ __html: q,  }}></div>
         <div className='row'>
         { arr.map( (item, index) => 
           <div key={index} className='col-sm-4'>
